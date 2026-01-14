@@ -2,33 +2,48 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\InvoiceRepository;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
-#[ApiResource(paginationEnabled: true, paginationItemsPerPage: 10)]
+#[ApiResource(
+    normalizationContext: ['groups' => ['invoices_read']],
+    order: ['amount' => 'ASC'],
+    paginationEnabled: true,
+    paginationItemsPerPage: 10,
+)]
+#[ApiFilter(OrderFilter::class, properties: ['amount', 'sentAt'])]
 class Invoice
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['invoices_read','customers_read'])]
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['invoices_read','customers_read'])]
     private ?float $amount = null;
 
     #[ORM\Column]
+    #[Groups(['invoices_read','customers_read'])]
     private ?\DateTime $sentAt = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['invoices_read','customers_read'])]
     private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'invoices')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['invoices_read'])]
     private ?Customer $customer = null;
 
     #[ORM\Column]
+    #[Groups(['invoices_read','customers_read'])]
     private ?int $chrono = null;
 
     public function getId(): ?int
