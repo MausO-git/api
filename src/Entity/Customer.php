@@ -64,23 +64,30 @@ class Customer
 
     /**
      * permet de récupérer le montant total des factures d'un client
-     *
      * @return float
      */
-    #[Groups('customers_read')]
-    public function totalAmount(): float
+    #[Groups(['customers_read'])]
+    public function getTotalAmount(): float
     {
-        return round(array_reduce($this->invoices->toArray(), function ($total, $invoice) {return $total + $invoice->getAmount();}, 0), 2);
+        return round(array_reduce($this->invoices->toArray(), function($total, $invoice) {return $total + $invoice->getAmount();}, 0), 2);
+        // round(1.615, 2) => 1.62
+        // array_reduce(array, function callback, initial_value)
+        // array_reduce(array, function ($carry, $item) { return $carry + $item['price']; }, 0)
+        // array_reduce($this->invoices->toArray(), function($total, $invoice) {return $total + $invoice->getAmount();}, 0)
     }
 
     /**
      * Permet de récupérer le montant total non payé des factures d'un client
      * @return float
      */
-    #[Groups('customers_read')]
-    public function getUnpaidAmount():float
+    #[Groups(['customers_read'])]
+    public function getUnpaidAmount(): float
     {
-        return round(array_reduce($this->invoices->toArray(), function ($total, $invoice) {return $total + ($invoice->getStatus() === "PAID" || $invoice->getStatus() === "CANCELED" ? 0 : $invoice->getAmount());}, 0), 2);
+        return round(array_reduce($this->invoices->toArray(),
+            function($total, $invoice) {
+                return $total + ($invoice->getStatus() === "PAID" || $invoice->getStatus() === "CANCELED" ? 0 : $invoice->getAmount());
+            }, 0),
+        2);
     }
 
     public function getId(): ?int
