@@ -2,17 +2,41 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use App\Repository\InvoiceRepository;
-use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use App\Controller\InvoiceIncrementionController;
+use ApiPlatform\OpenApi\Model;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
 #[ApiResource(
+    operations: [
+        new Get(),
+        new Post(),
+        new Post(
+            uriTemplate: '/invoices/{id}/increment',
+            controller: InvoiceIncrementionController::class,
+            openapi: new Model\Operation(
+            summary: 'Incrémente une facture',
+            description: "Incrémente le chrono d'une facture donnée"
+            ),
+            name: 'Increment'
+        ),
+        new GetCollection(),
+        new Put(),
+        new Patch(),
+        new Delete()
+    ],
     normalizationContext: ['groups' => ['invoices_read']],
     order: ['amount' => 'ASC'],
     paginationEnabled: true,
