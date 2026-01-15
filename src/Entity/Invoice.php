@@ -17,6 +17,7 @@ use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use App\Controller\InvoiceIncrementionController;
 use ApiPlatform\OpenApi\Model;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
 #[ApiResource(
@@ -61,23 +62,32 @@ class Invoice
 
     #[ORM\Column]
     #[Groups(['invoices_read','customers_read', 'invoices_subresource'])]
+    #[Assert\NotBlank(message:"Le montant est obligatoire")]
+    #[Assert\Type(type:"numeric", message:"Le montant de la facture doit être au format numérique")]
     private ?float $amount = null;
 
     #[ORM\Column]
     #[Groups(['invoices_read','customers_read', 'invoices_subresource'])]
+    #[Assert\NotBlank(message:"La date de la facture est obligatoire")]
+    #[Assert\Type(type:"datetime", message:"La date doit être au formet YYYY-MM-DD")]
     private ?\DateTime $sentAt = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['invoices_read','customers_read', 'invoices_subresource'])]
+    #[Assert\NotBlank(message:"Le statut de la facture est obligatoire")]
+    #[Assert\Choice(choices:["SENT", "PAID", "CANCELED"], message:"Le statut doit être soit SENT, soit PAID ou CANCELED")]
     private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'invoices')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['invoices_read'])]
+    #[Assert\NotBlank(message:"Le client de la facture est obligatoire")]
     private ?Customer $customer = null;
 
     #[ORM\Column]
     #[Groups(['invoices_read','customers_read', 'invoices_subresource'])]
+    #[Assert\NotBlank(message:"Le chrone de la facture est obligatoire")]
+    #[Assert\Type(type:"integer", message:"Le chrono de la facture doit être au format numérique")]
     private ?int $chrono = null;
 
     public function getId(): ?int

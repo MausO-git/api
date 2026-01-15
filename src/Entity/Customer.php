@@ -17,6 +17,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 #[ApiResource(
@@ -45,14 +46,20 @@ class Customer
 
     #[ORM\Column(length: 255)]
     #[Groups(['customers_read','users_read','invoices_read'])]
+    #[Assert\NotBlank(message:"Le prénom du client est obligatoire")]
+    #[Assert\Length(min: 2, max: 255, minMessage:"Le prénom doit faire entre 2 et 255 caractères.", maxMessage:"Le prénom ne peut pas faire plus de 255 caractères")]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['customers_read','users_read','invoices_read'])]
+    #[Assert\NotBlank(message:"Le nom du client est obligatoire")]
+    #[Assert\Length(min: 2, max: 255, minMessage:"Le nom doit faire entre 2 et 255 caractères.", maxMessage:"Le nom ne peut pas faire plus de 255 caractères")]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['customers_read','users_read','invoices_read'])]
+    #[Assert\NotBlank(message:"L'adresse E-mail est obligatoire")]
+    #[Assert\Email(message:"Le format de l'adresse E-mail doit être valide")]
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -69,6 +76,7 @@ class Customer
     #[ORM\ManyToOne(inversedBy: 'customers')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['customers_read'])]
+    #[Assert\NotBlank(message:"L'utilisateur est obligatoire")]
     private ?User $user = null;
 
     public function __construct()
