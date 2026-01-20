@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Invoice;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -40,4 +41,20 @@ class InvoiceRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findNextChrono(User $user): ?int
+    {
+        try{
+            return $this->createQueryBuilder("i")
+                ->select("i.chrono")
+                ->join("i.customer", "c")
+                ->where("c.user = :user")
+                ->setParameter("user", $user)
+                ->orderBy("i.chrono", "DESC")
+                ->setMaxResults(1)
+                ->getQuery()
+                ->getSingleColumnResult() + 1;
+        }catch(\Exception $e)
+        {}
+    }
 }
