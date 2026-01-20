@@ -42,19 +42,27 @@ class InvoiceRepository extends ServiceEntityRepository
     //        ;
     //    }
 
+    /**
+     * Permet de récupèrer le dernier chrono d'une facture et de faire + 1 
+     *
+     * @param User $user
+     * @return integer|null
+     */
     public function findNextChrono(User $user): ?int
     {
         try{
             return $this->createQueryBuilder("i")
-                ->select("i.chrono")
-                ->join("i.customer", "c")
-                ->where("c.user = :user")
-                ->setParameter("user", $user)
-                ->orderBy("i.chrono", "DESC")
-                ->setMaxResults(1)
-                ->getQuery()
-                ->getSingleColumnResult() + 1;
+                    ->select("i.chrono")
+                    ->join("i.customer","c")
+                    ->where("c.user = :user")
+                    ->setParameter("user", $user)
+                    ->orderBy("i.chrono", "DESC")
+                    ->setMaxResults(1)
+                    ->getQuery()
+                    ->getSingleScalarResult() + 1;
         }catch(\Exception $e)
-        {}
+        {
+            return 1;
+        }
     }
 }

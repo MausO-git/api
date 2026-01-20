@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Events;
 
 use App\Entity\User;
@@ -11,7 +10,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class PasswordEncoderSubscriber implements EventSubscriberInterface
 {
-
     public function __construct(private UserPasswordHasherInterface $passwordHasher)
     {}
 
@@ -21,16 +19,16 @@ class PasswordEncoderSubscriber implements EventSubscriberInterface
             KernelEvents::VIEW => ['encodePassword', EventPriorities::PRE_WRITE]
         ];
     }
-
+    
     public function encodePassword(ViewEvent $event)
     {
-        //récupérer l'objet désérialiser
+        // récup l'objet désérialisé 
         $user = $event->getControllerResult();
-        //récup la méthode GET, POST,...
+        // réup la méthode GET, POST ,...
         $method = $event->getRequest()->getMethod();
 
-        //création du filtre
-        //vérifier que l'objet soit un user et que la méthode soit POST
+        // création du filtre
+        // vérifier que l'objet soit un user et que la méthode soit POST
         if($user instanceof User && $method === "POST")
         {
             $hash = $this->passwordHasher->hashPassword($user, $user->getPassword());
